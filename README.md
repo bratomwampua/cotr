@@ -1,0 +1,2 @@
+# cotr
+COTR indicator
