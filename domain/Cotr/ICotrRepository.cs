@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Cotr
 {
-    interface ICotrRepository
+    public interface ICotrRepository
     {
-        Position[] GetAllPositionsByMarketId(int marketId);
+        void AddPosition(Position newPosition);
+        List<Cotr.Position> GetAllPositionsByMarketId(int marketId);
     }
 }
