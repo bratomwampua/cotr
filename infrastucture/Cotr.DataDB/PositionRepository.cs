@@ -6,7 +6,7 @@ namespace Cotr.DataDB
 {
     public class PositionRepository : ICotrRepository
     {
-        static string _strConnection = "Filename=cotr.litedb4; Mode=Exclusive;";
+        private static string _strConnection = "Filename=cotr.litedb4; Mode=Exclusive;";
 
         public void AddPosition(Position newPosition)
         {
