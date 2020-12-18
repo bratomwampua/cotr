@@ -4,10 +4,12 @@ using System.Text;
 
 namespace Cotr
 {
-    public interface ICotrRepository
+    public interface IPositionRepository
     {
         void AddPosition(Position newPosition);
 
-        List<Cotr.Position> GetAllPositionsByMarketId(int marketId);
+        DateTime GetPositionsLastDate();
+
+        List<Position> GetAllPositionsByMarketId(int marketId);
     }
 }

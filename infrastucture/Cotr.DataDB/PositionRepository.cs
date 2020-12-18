@@ -4,16 +4,19 @@ using System.Collections.Generic;
 
 namespace Cotr.DataDB
 {
-    public class PositionRepository : ICotrRepository
+    public class PositionRepository : IPositionRepository
     {
-        private static string _strConnection = "Filename=cotr.litedb4; Mode=Exclusive;";
+        private static readonly string _strConnection = "Filename=cotr.litedb4; Mode=Exclusive;";
+        private static readonly string collectionName = "position";
+
+        private List<Position> positions = new List<Position>();
 
         public void AddPosition(Position newPosition)
         {
             // Open database (or create if doesn't exist)
             using (var db = new LiteDatabase(_strConnection))
             {
-                var col = db.GetCollection<Position>("positions");
+                var col = db.GetCollection<Position>(collectionName);
 
                 col.Insert(newPosition);  // insert new position
             }
@@ -23,14 +26,27 @@ namespace Cotr.DataDB
         {
             using (var db = new LiteDatabase(_strConnection))
             {
-                var col = db.GetCollection<Position>("positions");
+                var col = db.GetCollection<Position>(collectionName);
 
-                var results = col.Query()
+                positions = col.Query()
                 .Where(x => x.Market.Id == marketId)
-                .OrderBy(x => x.Market.Id)
+                .OrderBy(x => x.PositionDate)
                 .ToList();
 
-                return results;
+                return positions;
+            }
+        }
+
+        public DateTime GetPositionsLastDate()
+        {
+            using (var db = new LiteDatabase(_strConnection))
+            {
+                var col = db.GetCollection<Position>(collectionName);
+
+                var lastDate = col.FindOne(Query.All("PositionDate", Query.Ascending));
+                Console.WriteLine(lastDate);
+
+                return Convert.ToDateTime("01/01/1970");  // !!! TMP !!!
             }
         }
     }
