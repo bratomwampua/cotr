@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Cotr.Service;
+
 namespace Cotr.WindowsForms
 {
     public partial class Form1 : Form
@@ -15,6 +17,8 @@ namespace Cotr.WindowsForms
         public Form1()
         {
             InitializeComponent();
+
+            new ServiceManager();
         }
     }
 }

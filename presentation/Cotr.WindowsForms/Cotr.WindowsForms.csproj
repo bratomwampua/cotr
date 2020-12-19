@@ -84,6 +84,10 @@
       <Project>{dda5924d-726c-4d30-a1a0-60f6f33e5e6e}</Project>
       <Name>Cotr.DataDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ServiceManager\Cotr.Service.csproj">
+      <Project>{de344d55-e5f0-4498-8c72-3fddef4b81aa}</Project>
+      <Name>Cotr.Service</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

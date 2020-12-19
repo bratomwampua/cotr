@@ -2,7 +2,7 @@
 
 namespace Cotr.CotAPI
 {
-    public class CotDataRepository : ICotDataRepository
+    public class CotDataRepository
     {
         public bool GetCotData()
         {
