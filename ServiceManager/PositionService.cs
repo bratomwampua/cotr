@@ -6,13 +6,13 @@ using Cotr.DataDB;
 
 namespace Cotr.Service
 {
-    internal class PositionService
+    public class PositionService
     {
         public static PositionRepository PosRepo { get; set; }
 
         public PositionService()
         {
-            PosRepo = PosRepo == null ? new PositionRepository() : PosRepo;
+            PosRepo = PosRepo ?? new PositionRepository();
         }
     }
 }

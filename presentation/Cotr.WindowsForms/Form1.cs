@@ -18,7 +18,8 @@ namespace Cotr.WindowsForms
         {
             InitializeComponent();
 
-            new ServiceManager();
+            var sm = new ServiceManager();
+            sm.CotService.UpdateCotData();
         }
     }
 }

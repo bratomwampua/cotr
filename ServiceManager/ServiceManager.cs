@@ -5,8 +5,8 @@ namespace Cotr.Service
 {
     public class ServiceManager
     {
-        private CotDataService CotService { get; set; }
-        private PositionService PosService { get; set; }
+        public CotDataService CotService { get; private set; }
+        public PositionService PosService { get; set; }
 
         public ServiceManager()
         {
