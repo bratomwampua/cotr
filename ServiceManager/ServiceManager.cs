@@ -10,7 +10,7 @@ namespace Cotr.Service
 
         public ServiceManager()
         {
-            this.CotService = new CotDataService();
+            this.CotService = new CotDataService(this);
             this.PosService = new PositionService();
         }
     }

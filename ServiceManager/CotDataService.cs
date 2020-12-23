@@ -12,22 +12,33 @@ namespace Cotr.Service
         private static CotDataRepository CotRepo
         { get; set; }
 
-        public CotDataService()
+        private static ServiceManager SM { get; set; }
+
+        public CotDataService(ServiceManager sm)
         {
             CotRepo = CotRepo ?? new CotDataRepository();
+            SM = SM ?? sm;
         }
 
-        public bool UpdateCotData()
+        private void updateFromArchive()
         {
-            // get last date from DB
-            DateTime dbDataLastDate = PositionService.PosRepo.GetPositionsLastDate();
+            CotRepo.GetCotArchiveData();
+        }
 
-            // if last date is null, get reports archive from API and save to DB
+        public void UpdateCotData()
+        {
+            // get last position date from DB
+            DateTime dbDataLastDate = SM.PosService.GetPositionsLastDate();
+
+            // if last date is empty (01.01.0001 0:00:00),
+            // get reports archive from API and save to DB
+            if (dbDataLastDate < Convert.ToDateTime("01/01/1970"))
+                this.updateFromArchive();
+
             // upload report from API and get last date
             // if report date not equal to last date from DB, save new report data to DB
 
-            Debug.WriteLine(dbDataLastDate.ToString());
-            return false;
+            // Debug.WriteLine(dbDataLastDate.ToString());
         }
     }
 }

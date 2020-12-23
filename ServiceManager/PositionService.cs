@@ -8,11 +8,17 @@ namespace Cotr.Service
 {
     public class PositionService
     {
-        public static PositionRepository PosRepo { get; set; }
+        private static PositionRepository PosRepo { get; set; }
 
         public PositionService()
         {
             PosRepo = PosRepo ?? new PositionRepository();
+        }
+
+        public DateTime GetPositionsLastDate()
+        {
+            DateTime dbDataLastDate = PosRepo.GetPositionsLastDate();
+            return dbDataLastDate;
         }
     }
 }
