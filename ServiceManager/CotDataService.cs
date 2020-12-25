@@ -20,7 +20,7 @@ namespace Cotr.Service
             SM = SM ?? sm;
         }
 
-        private void updateFromArchive()
+        private void UpdateFromArchive()
         {
             CotRepo.GetCotArchiveData();
         }
@@ -33,7 +33,7 @@ namespace Cotr.Service
             // if last date is empty (01.01.0001 0:00:00),
             // get reports archive from API and save to DB
             if (dbDataLastDate < Convert.ToDateTime("01/01/1970"))
-                this.updateFromArchive();
+                this.UpdateFromArchive();
 
             // upload report from API and get last date
             // if report date not equal to last date from DB, save new report data to DB
