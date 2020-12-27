@@ -5,54 +5,52 @@ using System.IO.Compression;
 using CsvHelper;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace Cotr.CotAPI
 {
     public class CotDataRepository
     {
-        private static readonly string commodityArchiveUrl = @"https://www.cftc.gov/files/dea/history/";
-        private static readonly string commodityArcFileName = "fut_disagg_txt_2020.zip";
-        private static readonly string commodityArcFileCsv = "f_year.txt";
+        private static readonly string archiveUrl = ConfigurationManager.AppSettings["archiveUrl"];
+        private static readonly string commodityArcFileName = ConfigurationManager.AppSettings["commodityArcFileName"];
+        private static readonly string commodityArcFileCsv = ConfigurationManager.AppSettings["commodityArcFileCsv"];
+        private static readonly string financialArcFileName = ConfigurationManager.AppSettings["financialArcFileName"];
+        private static readonly string financialArcFileCsv = ConfigurationManager.AppSettings["financialArcFileCsv"];
 
-        private static readonly string financialArchiveUrl = @"https://www.cftc.gov/files/dea/history/";
-        private static readonly string financialArcFileName = "fut_fin_txt_2020.zip";
-        private static readonly string financialArcFileCsv = "FinFutYY.txt";
-
-        private static readonly string tmpDir = @"D:\tmp\";
+        private static readonly string tmpDir = ConfigurationManager.AppSettings["tmpDir"];
 
         public bool GetCotData()
         {
             throw new NotImplementedException();
         }
 
-        private void Download(string url, string fileName)
+        private void Download(string url, string fileName, string csvFileName)
         {
-            string path = tmpDir + fileName;
+            string path = Path.Combine(tmpDir, fileName);
 
             WebClient client = new WebClient();
             client.DownloadFile(url + fileName, path);
+
+            File.Delete(Path.Combine(tmpDir, csvFileName));
             ZipFile.ExtractToDirectory(path, tmpDir);
+        }
+
+        private IEnumerable<dynamic> readFile(string arcFileCsvName)
+        {
+            using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                return csv.GetRecords<dynamic>();
+            }
         }
 
         public void GetCotArchiveData()
         {
-            IEnumerable<dynamic> commodityRecords;
-            IEnumerable<dynamic> financialRecords;
+            this.Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
+            this.Download(archiveUrl, financialArcFileName, financialArcFileCsv);
 
-            this.Download(commodityArchiveUrl, commodityArcFileName);
-            this.Download(financialArchiveUrl, financialArcFileName);
-
-            using (var reader = new StreamReader(tmpDir + commodityArcFileCsv))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                commodityRecords = csv.GetRecords<dynamic>();
-            }
-
-            using (var reader = new StreamReader(tmpDir + financialArcFileCsv))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                financialRecords = csv.GetRecords<dynamic>();
-            }
+            IEnumerable<dynamic> commodityRecords = readFile(commodityArcFileCsv);
+            IEnumerable<dynamic> financialRecords = readFile(financialArcFileCsv);
         }
     }
 }

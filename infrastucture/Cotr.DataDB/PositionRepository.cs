@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace Cotr.DataDB
 {
     public class PositionRepository : IPositionRepository
     {
-        private static readonly string _strConnection = @"Filename=D:\db\cotr.litedb4.db; Password=1234; Mode=Exclusive;";
+        private static readonly string _strConnection = ConfigurationManager.ConnectionStrings["LiteDb"].ConnectionString;
+
         private static readonly string collectionName = "position";
 
         // Open database (or create if doesn't exist)
