@@ -6,6 +6,5 @@ namespace Cotr.CotAPI
 {
     public class CommodityPosition
     {
-        //
     }
 }

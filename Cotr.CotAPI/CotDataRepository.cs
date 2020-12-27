@@ -26,16 +26,18 @@ namespace Cotr.CotAPI
 
         private void Download(string url, string fileName, string csvFileName)
         {
-            string path = Path.Combine(tmpDir, fileName);
+            string pathZip = Path.Combine(tmpDir, fileName);
+            string pathCsv = Path.Combine(tmpDir, csvFileName);
 
             WebClient client = new WebClient();
-            client.DownloadFile(url + fileName, path);
+            client.DownloadFile(url + fileName, pathZip);
 
-            File.Delete(Path.Combine(tmpDir, csvFileName));
-            ZipFile.ExtractToDirectory(path, tmpDir);
+            if (File.Exists(pathCsv)) File.Delete(pathCsv);
+
+            ZipFile.ExtractToDirectory(pathZip, tmpDir);
         }
 
-        private IEnumerable<dynamic> readFile(string arcFileCsvName)
+        private IEnumerable<dynamic> ReadFile(string arcFileCsvName)
         {
             using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -49,8 +51,8 @@ namespace Cotr.CotAPI
             this.Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
             this.Download(archiveUrl, financialArcFileName, financialArcFileCsv);
 
-            IEnumerable<dynamic> commodityRecords = readFile(commodityArcFileCsv);
-            IEnumerable<dynamic> financialRecords = readFile(financialArcFileCsv);
+            IEnumerable<dynamic> commodityRecords = ReadFile(commodityArcFileCsv);
+            IEnumerable<dynamic> financialRecords = ReadFile(financialArcFileCsv);
         }
     }
 }
