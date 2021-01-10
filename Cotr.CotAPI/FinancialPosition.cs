@@ -5,19 +5,19 @@ using CsvHelper.Configuration;
 
 namespace Cotr.CotAPI
 {
-    public class CommodityPosition
+    public class FinancialPosition
     {
         public string MarketAndExchangeName { get; set; }
         public string ReportDate { get; set; }
 
-        public int ProdMercLong { get; set; }
-        public int ProdMercShort { get; set; }
+        public int DealerLong { get; set; }
+        public int DealerShort { get; set; }
 
-        public int SwapLong { get; set; }
-        public int SwapShort { get; set; }
+        public int AssetMgrLong { get; set; }
+        public int AssetMgrShort { get; set; }
 
-        public int MMoneyLong { get; set; }
-        public int MMoneyShort { get; set; }
+        public int LevMoneyLong { get; set; }
+        public int LevMoneyShort { get; set; }
 
         public int OtherReportLong { get; set; }
         public int OtherReportShort { get; set; }
@@ -29,21 +29,21 @@ namespace Cotr.CotAPI
         public int NonReportShort { get; set; }
     }
 
-    public sealed class CommodityPositionMap : ClassMap<CommodityPosition>
+    public sealed class FinancialPositionMap : ClassMap<FinancialPosition>
     {
-        public CommodityPositionMap()
+        public FinancialPositionMap()
         {
             Map(m => m.MarketAndExchangeName).Name("Market_and_Exchange_Names");
             Map(m => m.ReportDate).Name("Report_Date_as_YYYY-MM-DD");
 
-            Map(m => m.ProdMercLong).Name("Prod_Merc_Positions_Long_All");
-            Map(m => m.ProdMercShort).Name("Prod_Merc_Positions_Short_All");
+            Map(m => m.DealerLong).Name("Dealer_Positions_Long_All");
+            Map(m => m.DealerShort).Name("Dealer_Positions_Short_All");
 
-            Map(m => m.SwapLong).Name("Swap_Positions_Long_All");
-            Map(m => m.SwapShort).Name("Swap__Positions_Short_All");
+            Map(m => m.AssetMgrLong).Name("Asset_Mgr_Positions_Long_All");
+            Map(m => m.AssetMgrShort).Name("Asset_Mgr_Positions_Short_All");
 
-            Map(m => m.MMoneyLong).Name("M_Money_Positions_Long_All");
-            Map(m => m.MMoneyShort).Name("M_Money_Positions_Short_All");
+            Map(m => m.LevMoneyLong).Name("Lev_Money_Positions_Long_All");
+            Map(m => m.LevMoneyShort).Name("Lev_Money_Positions_Short_All");
 
             Map(m => m.OtherReportLong).Name("Other_Rept_Positions_Long_All");
             Map(m => m.OtherReportShort).Name("Other_Rept_Positions_Short_All");
@@ -55,3 +55,4 @@ namespace Cotr.CotAPI
             Map(m => m.NonReportShort).Name("NonRept_Positions_Short_All");
         }
     }
+}

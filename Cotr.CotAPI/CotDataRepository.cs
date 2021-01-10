@@ -37,22 +37,33 @@ namespace Cotr.CotAPI
             ZipFile.ExtractToDirectory(pathZip, tmpDir);
         }
 
-        private IEnumerable<dynamic> ReadFile(string arcFileCsvName)
+        private IEnumerable<CommodityPosition> ReadCommodityFile(string arcFileCsvName)
         {
             using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                return csv.GetRecords<dynamic>();
+                csv.Configuration.RegisterClassMap<CommodityPositionMap>();
+                return csv.GetRecords<CommodityPosition>();
+            }
+        }
+
+        private IEnumerable<FinancialPosition> ReadFinacialFile(string arcFileCsvName)
+        {
+            using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.RegisterClassMap<FinancialPositionMap>();
+                return csv.GetRecords<FinancialPosition>();
             }
         }
 
         public void GetCotArchiveData()
         {
-            this.Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
-            this.Download(archiveUrl, financialArcFileName, financialArcFileCsv);
+            Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
+            Download(archiveUrl, financialArcFileName, financialArcFileCsv);
 
-            IEnumerable<dynamic> commodityRecords = ReadFile(commodityArcFileCsv);
-            IEnumerable<dynamic> financialRecords = ReadFile(financialArcFileCsv);
+            var commodityRecords = ReadCommodityFile(commodityArcFileCsv);
+            var financialRecords = ReadFinacialFile(financialArcFileCsv);
         }
     }
 }
