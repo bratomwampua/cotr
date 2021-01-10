@@ -55,3 +55,4 @@ namespace Cotr.CotAPI
             Map(m => m.NonReportShort).Name("NonRept_Positions_Short_All");
         }
     }
+}
