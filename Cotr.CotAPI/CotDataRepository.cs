@@ -6,6 +6,9 @@ using CsvHelper;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
+
+using System.Diagnostics;
 
 namespace Cotr.CotAPI
 {
@@ -37,23 +40,27 @@ namespace Cotr.CotAPI
             ZipFile.ExtractToDirectory(pathZip, tmpDir);
         }
 
-        private IEnumerable<CommodityPosition> ReadCommodityFile(string arcFileCsvName)
+        private List<CommodityPosition> ReadCommodityFile(string arcFileCsvName)
         {
             using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 csv.Configuration.RegisterClassMap<CommodityPositionMap>();
-                return csv.GetRecords<CommodityPosition>();
+                var records = csv.GetRecords<CommodityPosition>().ToList();
+
+                return records;
             }
         }
 
-        private IEnumerable<FinancialPosition> ReadFinacialFile(string arcFileCsvName)
+        private List<FinancialPosition> ReadFinacialFile(string arcFileCsvName)
         {
             using (var reader = new StreamReader(Path.Combine(tmpDir + arcFileCsvName)))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 csv.Configuration.RegisterClassMap<FinancialPositionMap>();
-                return csv.GetRecords<FinancialPosition>();
+                var records = csv.GetRecords<FinancialPosition>().ToList();
+
+                return records;
             }
         }
 
