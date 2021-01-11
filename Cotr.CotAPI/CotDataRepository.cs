@@ -64,13 +64,17 @@ namespace Cotr.CotAPI
             }
         }
 
-        public void GetCotArchiveData()
+        public (List<CommodityPosition>, List<FinancialPosition>) GetCotArchiveData()
         {
             Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
             Download(archiveUrl, financialArcFileName, financialArcFileCsv);
 
-            var commodityRecords = ReadCommodityFile(commodityArcFileCsv);
-            var financialRecords = ReadFinacialFile(financialArcFileCsv);
+            List<CommodityPosition> commodityRecords = ReadCommodityFile(commodityArcFileCsv);
+            List<FinancialPosition> financialRecords = ReadFinacialFile(financialArcFileCsv);
+
+            // TODO: format data to position format
+
+            return (commodityRecords, financialRecords);
         }
     }
 }
