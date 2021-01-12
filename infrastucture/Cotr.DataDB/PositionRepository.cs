@@ -8,14 +8,16 @@ namespace Cotr.DataDB
 {
     public class PositionRepository : IPositionRepository
     {
-        private static readonly string _strConnection = ConfigurationManager.ConnectionStrings["LiteDb"].ConnectionString;
+        private static LiteDatabase db;
 
         private static readonly string collectionName = "position";
 
-        // Open database (or create if doesn't exist)
-        private static readonly LiteDatabase db = new LiteDatabase(_strConnection);
-
         private List<Position> positions = new List<Position>();
+
+        public PositionRepository(LiteDatabase DB)
+        {
+            db = DB;
+        }
 
         public void AddPosition(Position newPosition)
         {

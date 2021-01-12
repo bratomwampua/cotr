@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LiteDB;
 
 using Cotr.DataDB;
 
@@ -10,9 +11,9 @@ namespace Cotr.Service
     {
         private static PositionRepository PosRepo { get; set; }
 
-        public PositionService()
+        public PositionService(LiteDatabase db)
         {
-            PosRepo = PosRepo ?? new PositionRepository();
+            PosRepo = new PositionRepository(db);
         }
 
         public DateTime GetPositionsLastDate()

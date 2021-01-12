@@ -14,10 +14,21 @@ namespace Cotr.Service
 
         private static ServiceManager SM { get; set; }
 
+        static CotDataService()
+        {
+            CotRepo = new CotDataRepository();
+        }
+
         public CotDataService(ServiceManager sm)
         {
-            CotRepo = CotRepo ?? new CotDataRepository();
             SM = SM ?? sm;
+        }
+
+        private void UpdateMarketSymbols()
+        {
+            List<MarketSymbol> symbolsRecords = CotRepo.GetMarketSymbols();
+
+            SM.SymbolService.AddMarketSymbols(symbolsRecords);
         }
 
         private void UpdateDataFromArchive()
@@ -36,16 +47,15 @@ namespace Cotr.Service
             // if last date is empty (01.01.0001 0:00:00),
             if (dbDataLastDate < Convert.ToDateTime("01/01/1970"))
             {
-                // TODO: update market symbols dictionary (from csv file to DB)
+                // update market symbols dictionary from csv file
+                UpdateMarketSymbols();
 
                 // get reports archive from API and save to DB
-                this.UpdateDataFromArchive();
+                UpdateDataFromArchive();
             }
 
             // upload report from API and get last date
             // if report date not equal to last date from DB, save new report data to DB
-
-            // Debug.WriteLine(dbDataLastDate.ToString());
         }
     }
 }
