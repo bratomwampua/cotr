@@ -6,7 +6,7 @@ using System.Configuration;
 
 namespace Cotr.DataDB
 {
-    public class PositionRepository : IPositionRepository
+    public class PositionRepository
     {
         private static LiteDatabase db;
 
@@ -24,18 +24,6 @@ namespace Cotr.DataDB
             var col = db.GetCollection<Position>(collectionName);
 
             col.Insert(newPosition);
-        }
-
-        public List<Position> GetAllPositionsByMarketId(int marketId)
-        {
-            var col = db.GetCollection<Position>(collectionName);
-
-            positions = col.Query()
-            .Where(x => x.Market.Id == marketId)
-            .OrderBy(x => x.PositionDate)
-            .ToList();
-
-            return positions;
         }
 
         public DateTime GetPositionsLastDate()

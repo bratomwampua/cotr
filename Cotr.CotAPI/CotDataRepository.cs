@@ -68,7 +68,45 @@ namespace Cotr.CotAPI
             }
         }
 
-        public (List<CommodityPosition>, List<FinancialPosition>) GetCotArchiveData()
+        public List<Position> FormatData(List<CommodityPosition> commodityRecords,
+                                         List<FinancialPosition> financialRecords)
+        {
+            List<Position> positions = new List<Position>();
+
+            commodityRecords.ForEach(el =>
+                {
+                    List<TraderPosition> traderPositions = new List<TraderPosition>
+                    {
+                        new TraderPosition("ProdMerc", "long", (uint)el.ProdMercLong),
+                        new TraderPosition("ProdMerc", "short", (uint)el.ProdMercShort),
+
+                        new TraderPosition("Swap", "long", (uint)el.SwapLong),
+                        new TraderPosition("Swap", "short", (uint)el.SwapShort),
+
+                        new TraderPosition("MMoney", "long", (uint)el.MMoneyLong),
+                        new TraderPosition("MMoney", "short", (uint)el.MMoneyShort),
+
+                        new TraderPosition("OtherReport", "long", (uint)el.OtherReportLong),
+                        new TraderPosition("OtherReport", "short", (uint)el.OtherReportShort),
+
+                        new TraderPosition("TotalReport", "long", (uint)el.TotalReportLong),
+                        new TraderPosition("TotalReport", "short", (uint)el.TotalReportShort),
+
+                        new TraderPosition("NonReport", "long", (uint)el.NonReportLong),
+                        new TraderPosition("NonReport", "short", (uint)el.NonReportShort)
+                    };
+
+                    positions.Add(new Position("commodity", el.MarketAndExchangeName,
+                                  DateTime.Parse(el.ReportDate), traderPositions));
+                }
+            );
+
+            // TODO: financialRecords.ForEach()
+
+            return positions;
+        }
+
+        public List<Position> GetCotArchiveData()
         {
             Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
             Download(archiveUrl, financialArcFileName, financialArcFileCsv);
@@ -76,9 +114,9 @@ namespace Cotr.CotAPI
             List<CommodityPosition> commodityRecords = ReadCommodityFile();
             List<FinancialPosition> financialRecords = ReadFinacialFile();
 
-            // TODO: format data to position format
+            List<Position> data = FormatData(commodityRecords, financialRecords);
 
-            return (commodityRecords, financialRecords);
+            return data;
         }
 
         private List<MarketSymbol> ReadMarketSymbolFile()

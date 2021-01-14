@@ -1,51 +1,69 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Cotr
 {
     public class Position
     {
-        public int Id { get; }
-        public PositionAttribute MarketGroup { get; }
-        public PositionAttribute Market { get; }
-        public PositionAttribute Direction { get; }
-        public uint Value { get; }
-        public DateTime PositionDate { get; }
+        public string MarketGroup { get; }
+        public string Market { get; }
+        public DateTime ReportDate { get; }
+        public List<TraderPosition> Positions { get; }
 
-        public Position(int id, PositionAttribute marketGroup, PositionAttribute market,
-                        PositionAttribute direction, uint value, DateTime positionDate)
+        public Position(string marketGroup, string market,
+                        DateTime reportDate, List<TraderPosition> positions)
         {
-            this.Id = id;
-            this.MarketGroup = marketGroup;
-            this.Market = market;
-            this.Direction = direction;
-            this.Value = value;
-            this.PositionDate = positionDate;
+            Fn.ThrowIfInvalidArgs(marketGroup, market);
+
+            MarketGroup = marketGroup;
+            Market = market;
+            ReportDate = reportDate;
+            Positions = positions;
         }
     }
 
-    public class PositionAttribute
+    public class TraderPosition
     {
-        public int Id { get; }
-        public string Name { get; }
+        public string TraderName { get; }
+        public string Direction { get; }
+        public uint Value { get; }
 
-        public PositionAttribute(int id, string name)
+        public TraderPosition(string traderName, string direction, uint value)
         {
-            Fn.ThrowIfInvalidArgs(id, name);
+            Fn.ThrowIfInvalidArgs(traderName, direction, value);
 
-            this.Id = id;
-            this.Name = name;
+            TraderName = traderName;
+            Direction = direction;
+            Value = value;
         }
     }
 
     internal static class Fn
     {
-        public static void ThrowIfInvalidArgs(int id, string name)
+        public static void ThrowIfInvalidArgs(string marketGroup, string market)
         {
-            if (id < 0)
-                throw new ArgumentOutOfRangeException("PositionAttribute Id cannot be negative");
+            string[] marketGroups = { "commodity", "financial" };
 
-            if (String.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("PositionAttribute Name cannot be empty or contain only spaces");
+            if (!marketGroups.Contains(marketGroup))
+                throw new ArgumentOutOfRangeException("Position Market Group must be commodity or financial");
+
+            if (String.IsNullOrWhiteSpace(market))
+                throw new ArgumentException("Position Market name cannot be empty or contain only spaces");
+        }
+
+        public static void ThrowIfInvalidArgs(string traderName, string direction, uint value)
+        {
+            string[] directions = { "long", "short" };
+
+            if (String.IsNullOrWhiteSpace(traderName))
+                throw new ArgumentException("Position Trader Name cannot be empty or contain only spaces");
+
+            if (!directions.Contains(direction))
+                throw new ArgumentOutOfRangeException("Position Direction must be long or short");
+
+            if (value < 0)
+                throw new ArgumentOutOfRangeException("Position value cannot be negative");
         }
     }
 }

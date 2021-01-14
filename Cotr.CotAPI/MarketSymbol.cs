@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+// TODO: remove class to domain
+
 namespace Cotr.CotAPI
 {
     public class MarketSymbol

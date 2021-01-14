@@ -33,8 +33,7 @@ namespace Cotr.Service
 
         private void UpdateDataFromArchive()
         {
-            (List<CommodityPosition> commodityRecords,
-             List<FinancialPosition> financialRecords) = CotRepo.GetCotArchiveData();
+            List<Position> data = CotRepo.GetCotArchiveData();
 
             // TODO: send data to position service
         }
