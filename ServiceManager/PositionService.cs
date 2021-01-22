@@ -19,7 +19,13 @@ namespace Cotr.Service
         public DateTime GetPositionsLastDate()
         {
             DateTime dbDataLastDate = PosRepo.GetPositionsLastDate();
+
             return dbDataLastDate;
+        }
+
+        public void AddPositions(List<Position> positions)
+        {
+            PosRepo.AddPositions(positions);
         }
     }
 }

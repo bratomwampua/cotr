@@ -33,9 +33,9 @@ namespace Cotr.Service
 
         private void UpdateDataFromArchive()
         {
-            List<Position> data = CotRepo.GetCotArchiveData();
+            List<Position> positions = CotRepo.GetCotArchiveData();
 
-            // TODO: send data to position service
+            SM.PosService.AddPositions(positions);
         }
 
         public void UpdateCotData()

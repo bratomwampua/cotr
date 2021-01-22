@@ -12,18 +12,18 @@ namespace Cotr.DataDB
 
         private static readonly string collectionName = "position";
 
-        private List<Position> positions = new List<Position>();
+        // private List<Position> positions = new List<Position>();
 
         public PositionRepository(LiteDatabase DB)
         {
             db = DB;
         }
 
-        public void AddPosition(Position newPosition)
+        public void AddPositions(List<Position> positions)
         {
             var col = db.GetCollection<Position>(collectionName);
 
-            col.Insert(newPosition);
+            positions.ForEach(el => col.Insert(el));
         }
 
         public DateTime GetPositionsLastDate()
@@ -31,7 +31,6 @@ namespace Cotr.DataDB
             var col = db.GetCollection<Position>(collectionName);
 
             var lastDate = col.FindOne(Query.All("PositionDate", Query.Ascending));
-            Debug.WriteLine(lastDate);
 
             return Convert.ToDateTime(lastDate);
         }

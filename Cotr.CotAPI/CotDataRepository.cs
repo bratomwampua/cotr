@@ -101,7 +101,32 @@ namespace Cotr.CotAPI
                 }
             );
 
-            // TODO: financialRecords.ForEach()
+            financialRecords.ForEach(el =>
+            {
+                List<TraderPosition> traderPositions = new List<TraderPosition>
+                {
+                    new TraderPosition("Dealer", "long", (uint)el.DealerLong),
+                    new TraderPosition("Dealer", "short", (uint)el.DealerShort),
+
+                    new TraderPosition("AssetMgr", "long", (uint)el.AssetMgrLong),
+                    new TraderPosition("AssetMgr", "short", (uint)el.AssetMgrShort),
+
+                    new TraderPosition("LevMoney", "long", (uint)el.LevMoneyLong),
+                    new TraderPosition("LevMoney", "short", (uint)el.LevMoneyShort),
+
+                    new TraderPosition("OtherReport", "long", (uint)el.OtherReportLong),
+                    new TraderPosition("OtherReport", "short", (uint)el.OtherReportShort),
+
+                    new TraderPosition("TotalReport", "long", (uint)el.TotalReportLong),
+                    new TraderPosition("TotalReport", "short", (uint)el.TotalReportShort),
+
+                    new TraderPosition("NonReport", "long", (uint)el.NonReportLong),
+                    new TraderPosition("NonReport", "short", (uint)el.NonReportShort)
+                };
+
+                positions.Add(new Position("financial", el.MarketAndExchangeName,
+                              DateTime.Parse(el.ReportDate), traderPositions));
+            });
 
             return positions;
         }

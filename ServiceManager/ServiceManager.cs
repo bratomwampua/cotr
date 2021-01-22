@@ -7,7 +7,7 @@ namespace Cotr.Service
 {
     public class ServiceManager
     {
-        private static LiteDatabase db;
+        private static readonly LiteDatabase db;
         public CotDataService CotService { get; private set; }
         public PositionService PosService { get; set; }
         public MarketSymbolService SymbolService { get; set; }
