@@ -26,13 +26,22 @@ namespace Cotr.DataDB
             positions.ForEach(el => col.Insert(el));
         }
 
+        public void DeleteAllPositions()
+        {
+            var col = db.GetCollection<Position>(collectionName);
+
+            col.DeleteAll();
+        }
+
         public DateTime GetPositionsLastDate()
         {
             var col = db.GetCollection<Position>(collectionName);
 
-            var lastDate = col.FindOne(Query.All("PositionDate", Query.Ascending));
+            var lastDatePosition = col.FindOne(Query.All("ReportDate", Query.Descending));
 
-            return Convert.ToDateTime(lastDate);
+            return lastDatePosition is null
+                ? Convert.ToDateTime("01/01/1970")
+                : Convert.ToDateTime(lastDatePosition.ReportDate);
         }
     }
 }

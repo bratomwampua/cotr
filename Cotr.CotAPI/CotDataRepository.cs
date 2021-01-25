@@ -14,6 +14,8 @@ namespace Cotr.CotAPI
 {
     public class CotDataRepository
     {
+        private static readonly uint dataDepthInYears = uint.Parse(ConfigurationManager.AppSettings["dataDepthInYears"]);
+
         private static readonly string wDir = ConfigurationManager.AppSettings["wDir"];
 
         private static readonly string archiveUrl = ConfigurationManager.AppSettings["archiveUrl"];
@@ -31,41 +33,77 @@ namespace Cotr.CotAPI
             throw new NotImplementedException();
         }
 
-        private void Download(string url, string fileName, string csvFileName)
+        private void Download(string fileName, string csvFileName)
         {
-            string pathZip = Path.Combine(wDir, fileName);
-            string pathCsv = Path.Combine(wDir, csvFileName);
-
             WebClient client = new WebClient();
-            client.DownloadFile(url + fileName, pathZip);
+            int currentYear = DateTime.Now.Year;
+            string pathOrigCsvFile = Path.Combine(wDir, csvFileName);
 
-            if (File.Exists(pathCsv)) File.Delete(pathCsv);
+            for (int year = currentYear; currentYear - year < dataDepthInYears; year--)
+            {
+                string archFile = fileName.Replace("xxxx", year.ToString());
+                string pathZip = Path.Combine(wDir, archFile);
 
-            ZipFile.ExtractToDirectory(pathZip, wDir);
+                string csvFile = csvFileName.Replace(".txt", $"_{year.ToString()}.txt");
+                string pathCsv = Path.Combine(wDir, csvFile);
+
+                client.DownloadFile(archiveUrl + archFile, pathZip);
+
+                if (File.Exists(pathOrigCsvFile)) File.Delete(pathOrigCsvFile);
+                ZipFile.ExtractToDirectory(pathZip, wDir);
+
+                // rename original csv file
+                if (File.Exists(pathCsv)) File.Delete(pathCsv);
+                File.Move(pathOrigCsvFile, pathCsv);
+            }
         }
 
         private List<CommodityPosition> ReadCommodityFile()
         {
-            using (var reader = new StreamReader(Path.Combine(wDir + commodityArcFileCsv)))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                csv.Configuration.RegisterClassMap<CommodityPositionMap>();
-                var records = csv.GetRecords<CommodityPosition>().ToList();
+            int currentYear = DateTime.Now.Year;
 
-                return records;
+            List<CommodityPosition> records = new List<CommodityPosition>();
+
+            for (int year = currentYear; currentYear - year < dataDepthInYears; year--)
+            {
+                string csvFile = commodityArcFileCsv.Replace(".txt", $"_{year.ToString()}.txt");
+                string pathCsv = Path.Combine(wDir, csvFile);
+
+                using (var reader = new StreamReader(pathCsv))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    csv.Configuration.RegisterClassMap<CommodityPositionMap>();
+                    var recs = csv.GetRecords<CommodityPosition>().ToList();
+
+                    records.AddRange(recs);
+                }
             }
+
+            return records;
         }
 
         private List<FinancialPosition> ReadFinacialFile()
         {
-            using (var reader = new StreamReader(Path.Combine(wDir + financialArcFileCsv)))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                csv.Configuration.RegisterClassMap<FinancialPositionMap>();
-                var records = csv.GetRecords<FinancialPosition>().ToList();
+            int currentYear = DateTime.Now.Year;
 
-                return records;
+            List<FinancialPosition> records = new List<FinancialPosition>();
+
+            for (int year = currentYear; currentYear - year < dataDepthInYears; year--)
+            {
+                string csvFile = financialArcFileCsv.Replace(".txt", $"_{year.ToString()}.txt");
+                string pathCsv = Path.Combine(wDir, csvFile);
+
+                using (var reader = new StreamReader(pathCsv))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    csv.Configuration.RegisterClassMap<FinancialPositionMap>();
+                    var recs = csv.GetRecords<FinancialPosition>().ToList();
+
+                    records.AddRange(recs);
+                }
             }
+
+            return records;
         }
 
         public List<Position> FormatData(List<CommodityPosition> commodityRecords,
@@ -133,8 +171,8 @@ namespace Cotr.CotAPI
 
         public List<Position> GetCotArchiveData()
         {
-            Download(archiveUrl, commodityArcFileName, commodityArcFileCsv);
-            Download(archiveUrl, financialArcFileName, financialArcFileCsv);
+            Download(commodityArcFileName, commodityArcFileCsv);
+            Download(financialArcFileName, financialArcFileCsv);
 
             List<CommodityPosition> commodityRecords = ReadCommodityFile();
             List<FinancialPosition> financialRecords = ReadFinacialFile();

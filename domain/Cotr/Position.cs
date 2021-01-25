@@ -6,10 +6,19 @@ namespace Cotr
 {
     public class Position
     {
-        public string MarketGroup { get; }
-        public string Market { get; }
-        public DateTime ReportDate { get; }
-        public List<TraderPosition> Positions { get; }
+        public string MarketGroup { get; set; }
+        public string Market { get; set; }
+        public DateTime ReportDate { get; set; }
+        public List<TraderPosition> Positions { get; set; }
+
+        // LiteDB need a public parameterless constructor
+        public Position()
+        {
+            MarketGroup = "";
+            Market = "";
+            ReportDate = DateTime.Today;
+            Positions = new List<TraderPosition>();
+        }
 
         public Position(string marketGroup, string market,
                         DateTime reportDate, List<TraderPosition> positions)
@@ -28,6 +37,14 @@ namespace Cotr
         public string TraderName { get; }
         public string Direction { get; }
         public uint Value { get; }
+
+        // LiteDB need a public parameterless constructor
+        public TraderPosition()
+        {
+            TraderName = "";
+            Direction = "";
+            Value = 0;
+        }
 
         public TraderPosition(string traderName, string direction, uint value)
         {

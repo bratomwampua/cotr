@@ -27,5 +27,10 @@ namespace Cotr.Service
         {
             PosRepo.AddPositions(positions);
         }
+
+        public void DeleteAllPositions()
+        {
+            PosRepo.DeleteAllPositions();
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Cotr.DataDB
 
         private static readonly string collectionName = "marketSymbol";
 
-        // private List<MarketSymbol> symbols = new List<MarketSymbol>();
+        private List<MarketSymbol> symbols = new List<MarketSymbol>();
 
         public MarketSymbolRepository(LiteDatabase DB)
         {
