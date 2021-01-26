@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Linq;
 
 using Cotr.CotAPI;
 
@@ -38,6 +39,14 @@ namespace Cotr.Service
             SM.PosService.AddPositions(positions);
         }
 
+        private void addDataFromReport(DateTime dbDataLastDate)
+        {
+            List<Position> positions = CotRepo.GetCotReportData();
+
+            if (positions.First().ReportDate > dbDataLastDate)
+                SM.PosService.AddPositions(positions);
+        }
+
         public void UpdateCotData()
         {
             // get last position date from DB
@@ -58,11 +67,11 @@ namespace Cotr.Service
                 SM.PosService.DeleteAllPositions();
                 UpdateDataFromArchive(); // get reports archive from API and save to DB
             }
-            // if last date from 7 to 13 days old
+            // if last data date from 1 to 13 days old
             // upload report from API and add to DB
             else if ((DateTime.Today - dbDataLastDate).Days > 1)
             {
-                // addDataFromReport();
+                addDataFromReport(dbDataLastDate);
             }
         }
     }

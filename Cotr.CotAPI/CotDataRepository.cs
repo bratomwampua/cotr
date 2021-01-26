@@ -3,6 +3,7 @@ using System.Net;
 using System.IO;
 using System.IO.Compression;
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Configuration;
@@ -19,19 +20,17 @@ namespace Cotr.CotAPI
         private static readonly string wDir = ConfigurationManager.AppSettings["wDir"];
 
         private static readonly string archiveUrl = ConfigurationManager.AppSettings["archiveUrl"];
+        private static readonly string reportUrl = ConfigurationManager.AppSettings["reportUrl"];
 
         private static readonly string commodityArcFileName = ConfigurationManager.AppSettings["commodityArcFileName"];
         private static readonly string commodityArcFileCsv = ConfigurationManager.AppSettings["commodityArcFileCsv"];
+        private static readonly string commodityReportFileCsv = ConfigurationManager.AppSettings["commodityReportFileCsv"];
 
         private static readonly string financialArcFileName = ConfigurationManager.AppSettings["financialArcFileName"];
         private static readonly string financialArcFileCsv = ConfigurationManager.AppSettings["financialArcFileCsv"];
+        private static readonly string financialReportFileCsv = ConfigurationManager.AppSettings["financialReportFileCsv"];
 
         private static readonly string dicMarketSymbolFileName = ConfigurationManager.AppSettings["dicMarketSymbolFileName"];
-
-        public bool GetCotData()
-        {
-            throw new NotImplementedException();
-        }
 
         private void Download(string fileName, string csvFileName)
         {
@@ -44,7 +43,7 @@ namespace Cotr.CotAPI
                 string archFile = fileName.Replace("xxxx", year.ToString());
                 string pathZip = Path.Combine(wDir, archFile);
 
-                string csvFile = csvFileName.Replace(".txt", $"_{year.ToString()}.txt");
+                string csvFile = csvFileName.Replace(".txt", $"_{year}.txt");
                 string pathCsv = Path.Combine(wDir, csvFile);
 
                 client.DownloadFile(archiveUrl + archFile, pathZip);
@@ -58,7 +57,15 @@ namespace Cotr.CotAPI
             }
         }
 
-        private List<CommodityPosition> ReadCommodityFile()
+        public void DownloadReport(string fileName)
+        {
+            WebClient client = new WebClient();
+            string pathCsv = Path.Combine(wDir, fileName);
+
+            client.DownloadFile(reportUrl + fileName, pathCsv);
+        }
+
+        private List<CommodityPosition> ReadCommodityArcFile()
         {
             int currentYear = DateTime.Now.Year;
 
@@ -66,7 +73,7 @@ namespace Cotr.CotAPI
 
             for (int year = currentYear; currentYear - year < dataDepthInYears; year--)
             {
-                string csvFile = commodityArcFileCsv.Replace(".txt", $"_{year.ToString()}.txt");
+                string csvFile = commodityArcFileCsv.Replace(".txt", $"_{year}.txt");
                 string pathCsv = Path.Combine(wDir, csvFile);
 
                 using (var reader = new StreamReader(pathCsv))
@@ -82,7 +89,7 @@ namespace Cotr.CotAPI
             return records;
         }
 
-        private List<FinancialPosition> ReadFinacialFile()
+        private List<FinancialPosition> ReadFinacialArcFile()
         {
             int currentYear = DateTime.Now.Year;
 
@@ -90,7 +97,7 @@ namespace Cotr.CotAPI
 
             for (int year = currentYear; currentYear - year < dataDepthInYears; year--)
             {
-                string csvFile = financialArcFileCsv.Replace(".txt", $"_{year.ToString()}.txt");
+                string csvFile = financialArcFileCsv.Replace(".txt", $"_{year}.txt");
                 string pathCsv = Path.Combine(wDir, csvFile);
 
                 using (var reader = new StreamReader(pathCsv))
@@ -104,6 +111,44 @@ namespace Cotr.CotAPI
             }
 
             return records;
+        }
+
+        private List<CommodityPosition> ReadCommodityReportFile()
+        {
+            string pathCsv = Path.Combine(wDir, commodityReportFileCsv);
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+            };
+
+            using (var reader = new StreamReader(pathCsv))
+            using (var csv = new CsvReader(reader, config))
+            {
+                csv.Configuration.RegisterClassMap<CommodityPositionIndexMap>();
+                var records = csv.GetRecords<CommodityPosition>().ToList();
+
+                return records;
+            }
+        }
+
+        private List<FinancialPosition> ReadFinancialReportFile()
+        {
+            string pathCsv = Path.Combine(wDir, financialReportFileCsv);
+
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = false,
+            };
+
+            using (var reader = new StreamReader(pathCsv))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Configuration.RegisterClassMap<FinancialPositionIndexMap>();
+                var records = csv.GetRecords<FinancialPosition>().ToList();
+
+                return records;
+            }
         }
 
         public List<Position> FormatData(List<CommodityPosition> commodityRecords,
@@ -174,8 +219,21 @@ namespace Cotr.CotAPI
             Download(commodityArcFileName, commodityArcFileCsv);
             Download(financialArcFileName, financialArcFileCsv);
 
-            List<CommodityPosition> commodityRecords = ReadCommodityFile();
-            List<FinancialPosition> financialRecords = ReadFinacialFile();
+            List<CommodityPosition> commodityRecords = ReadCommodityArcFile();
+            List<FinancialPosition> financialRecords = ReadFinacialArcFile();
+
+            List<Position> data = FormatData(commodityRecords, financialRecords);
+
+            return data;
+        }
+
+        public List<Position> GetCotReportData()
+        {
+            DownloadReport(commodityReportFileCsv);
+            DownloadReport(financialReportFileCsv);
+
+            List<CommodityPosition> commodityRecords = ReadCommodityReportFile();
+            List<FinancialPosition> financialRecords = ReadFinancialReportFile();
 
             List<Position> data = FormatData(commodityRecords, financialRecords);
 

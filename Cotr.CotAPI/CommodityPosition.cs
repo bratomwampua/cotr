@@ -55,4 +55,31 @@ namespace Cotr.CotAPI
             Map(m => m.NonReportShort).Name("NonRept_Positions_Short_All");
         }
     }
+
+    public sealed class CommodityPositionIndexMap : ClassMap<CommodityPosition>
+    {
+        public CommodityPositionIndexMap()
+        {
+            Map(m => m.MarketAndExchangeName).Index(0);
+            Map(m => m.ReportDate).Index(2);
+
+            Map(m => m.ProdMercLong).Index(8);
+            Map(m => m.ProdMercShort).Index(9);
+
+            Map(m => m.SwapLong).Index(10);
+            Map(m => m.SwapShort).Index(11);
+
+            Map(m => m.MMoneyLong).Index(13);
+            Map(m => m.MMoneyShort).Index(14);
+
+            Map(m => m.OtherReportLong).Index(16);
+            Map(m => m.OtherReportShort).Index(17);
+
+            Map(m => m.TotalReportLong).Index(19);
+            Map(m => m.TotalReportShort).Index(20);
+
+            Map(m => m.NonReportLong).Index(21);
+            Map(m => m.NonReportShort).Index(22);
+        }
+    }
 }
