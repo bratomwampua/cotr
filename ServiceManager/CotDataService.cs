@@ -65,6 +65,7 @@ namespace Cotr.Service
             else if ((DateTime.Today - dbDataLastDate).Days > 14)
             {
                 SM.PosService.DeleteAllPositions();
+                UpdateMarketSymbols();
                 UpdateDataFromArchive(); // get reports archive from API and save to DB
             }
             // if last data date from 1 to 13 days old

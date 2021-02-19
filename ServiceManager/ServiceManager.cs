@@ -10,7 +10,7 @@ namespace Cotr.Service
         private static readonly LiteDatabase db;
         public CotDataService CotService { get; private set; }
         public PositionService PosService { get; set; }
-        public MarketSymbolService SymbolService { get; set; }
+        public MarketSymbolService SymbolService;
 
         static ServiceManager()
         {

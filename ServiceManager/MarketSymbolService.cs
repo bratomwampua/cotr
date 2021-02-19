@@ -10,7 +10,7 @@ namespace Cotr.Service
 {
     public class MarketSymbolService
     {
-        private static MarketSymbolRepository SymbolRepo { get; set; }
+        private static MarketSymbolRepository SymbolRepo;
 
         public MarketSymbolService(LiteDatabase db)
         {
@@ -20,6 +20,11 @@ namespace Cotr.Service
         public void AddMarketSymbols(List<MarketSymbol> symbols)
         {
             SymbolRepo.AddMarketSymbols(symbols);
+        }
+
+        public List<string> GetAllMarketSymbols()
+        {
+            return SymbolRepo.GetAllMarketSymbols();
         }
     }
 }

@@ -17,9 +17,19 @@ namespace Cotr.WindowsForms
         public Form1()
         {
             InitializeComponent();
-
+            // update date
             var sm = new ServiceManager();
             sm.CotService.UpdateCotData();
+            // set form elements
+            string[] markets = sm.SymbolService.GetAllMarketSymbols().ToArray();
+            this.marketComboBox.Items.AddRange(markets);
+        }
+
+        private void marketComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            {
+                MessageBox.Show(marketComboBox.SelectedItem.ToString());
+            }
         }
     }
 }
