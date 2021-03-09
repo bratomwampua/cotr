@@ -1,37 +1,47 @@
 ﻿using LiteDB;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Configuration;
 
 namespace Cotr.DataDB
 {
-    public class PositionRepository : ICotrRepository
+    public class PositionRepository
     {
-        static string _strConnection = "Filename=cotr.litedb4; Mode=Exclusive;";
+        private static LiteDatabase db;
 
-        public void AddPosition(Position newPosition)
+        private static readonly string collectionName = "position";
+
+        // private List<Position> positions = new List<Position>();
+
+        public PositionRepository(LiteDatabase DB)
         {
-            // Open database (or create if doesn't exist)
-            using (var db = new LiteDatabase(_strConnection))
-            {
-                var col = db.GetCollection<Position>("positions");
-
-                col.Insert(newPosition);  // insert new position
-            }
+            db = DB;
         }
 
-        public List<Position> GetAllPositionsByMarketId(int marketId)
+        public void AddPositions(List<Position> positions)
         {
-            using (var db = new LiteDatabase(_strConnection))
-            {
-                var col = db.GetCollection<Position>("positions");
+            var col = db.GetCollection<Position>(collectionName);
 
-                var results = col.Query()
-                .Where(x => x.Market.Id == marketId)
-                .OrderBy(x => x.Market.Id)
-                .ToList();
+            positions.ForEach(el => col.Insert(el));
+        }
 
-                return results;
-            }
+        public void DeleteAllPositions()
+        {
+            var col = db.GetCollection<Position>(collectionName);
+
+            col.DeleteAll();
+        }
+
+        public DateTime GetPositionsLastDate()
+        {
+            var col = db.GetCollection<Position>(collectionName);
+
+            var lastDatePosition = col.FindOne(Query.All("ReportDate", Query.Descending));
+
+            return lastDatePosition is null
+                ? Convert.ToDateTime("01/01/1970")
+                : Convert.ToDateTime(lastDatePosition.ReportDate);
         }
     }
 }
